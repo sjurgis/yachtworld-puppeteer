@@ -19,7 +19,7 @@ const makes = [
     'Elan',
     'Catalina',
     'Grand Soleil',
-    'Hunter' ,
+    'Hunter',
     'Island Packet',
     'Wauquiez'
 ];
@@ -29,7 +29,7 @@ const hasMore = async (page) => {
     const groups = __searchResultsCount.match(digits);
     return parseInt(groups[2]) > parseInt(groups[1]);
 };
-const parseListings = async (page) => {
+const parseListings = async (page, make) => {
     const prices = [];
     const boats = await page.$$('div.information');
     for (let boat of boats) {
@@ -49,6 +49,7 @@ const parseListings = async (page) => {
             const modelParams = _model.match(digits);
             if(__price && _model){
                 prices.push({
+                    make: make,
                     model: _model,
                     length: modelParams[0],
                     year: modelParams[1],
@@ -71,29 +72,28 @@ const parseListings = async (page) => {
         width: 2048,
         height: 1280
     });
-
+    let prices = []
     for(let make of makes){
         const url = `https://au.yachtworld.com/core/listing/cache/searchResults.jsp?is=false&sm=3&searchtype=advancedsearch&Ntk=boatsUK&ftid=0&enid=0&toYear=2010&type=%28Sail%29&hmid=0&boatsAddedSelected=-1&slim=quick&currencyid=1008&luom=126&toLength=60&cit=true&fromLength=38&fromYear=1990&man=${make}&ps=50&No=0&Ns=PBoat_sortByPriceAsc|0`;
         await page.goto(url, {
             waitUntil: "networkidle2"
         });
-        let prices = await parseListings(page);
+        prices = [...prices, ...await parseListings(page, make)];
         while(await hasMore(page)){
             const _url2 = await page.$('#searchResultsHeader > div.searchResultsNav > span.navNext > a');
             const url2 = await _url2.evaluate(node => node.href);
             await page.goto(url2, {
                 waitUntil: "networkidle2"
             });
-            const prices2 = await parseListings(page);
-            prices = [...prices, ...prices2];
+            prices = [...prices, ...await parseListings(page, make)];
         }
-        const ws = fs.createWriteStream(`results/${make}-${now}.csv`);
-        fastcsv
-            .write(prices, { headers: true, quote: true, quoteColumns: true })
-            .pipe(ws);
-        fs.writeFileSync(`results/${make}-${now}.json`, JSON.stringify(prices));
-        // console.log(prices.sort((x, y) => (x.price == y.price) ? 0 : ((x.price > y.price) ? 1 : -1)));
-        // console.log(prices);
     }
+    const ws = fs.createWriteStream(`yachtworld-${now}.csv`);
+    fastcsv
+        .write(prices, { headers: true, quote: true, quoteColumns: true })
+        .pipe(ws);
+    fs.writeFileSync(`yachtworld-${now}.json`, JSON.stringify(prices));
+    // console.log(prices.sort((x, y) => (x.price == y.price) ? 0 : ((x.price > y.price) ? 1 : -1)));
+    // console.log(prices);
     await browser.close();
 })();
