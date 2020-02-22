@@ -1,0 +1,11 @@
+{
+  "name": "yachtworld-puppeteer",
+  "version": "1.0.0",
+  "description": "Scrapes yachtworld listings using puppeteer",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "fast-csv": "^4.1.1",
+    "puppeteer": "^2.1.0"
+  }
+}
