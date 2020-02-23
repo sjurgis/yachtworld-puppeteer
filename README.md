@@ -13,3 +13,4 @@ npm i
 node .
 ```
 
+Analysis on Google Sheets: https://docs.google.com/spreadsheets/d/1wiClebtDRbIo_VWi2_neH4igX8fIJ3MCiRzUaWmARBo/edit?usp=sharing
