@@ -21,6 +21,7 @@ const makes = [
     'Grand Soleil',
     'Hunter',
     'Island Packet',
+    'Jeanneau',
     'Wauquiez'
 ];
 const hasMore = async (page) => {
@@ -63,7 +64,7 @@ const parseListings = async (page, make) => {
 };
 (async () => {
     const browser = await puppeteer.launch({
-        // headless: false,
+        headless: false,
         // devtools: true,
         // slowMo: 50
     });
