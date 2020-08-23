@@ -88,10 +88,9 @@ const parseListings = async (page, make) => {
     return prices;
 };
 const exitIfAlreadyRanToday = () => {
-    var inputDate = new Date(parseInt(fs.readFileSync('lastrundate', "utf8")))
-    var todaysDate = new Date();
-    debugger
-    if(inputDate.setHours(0,0,0,0) === todaysDate.setHours(0,0,0,0)) {
+    var lastRunDate = new Date(parseInt(fs.readFileSync('lastrundate', "utf8")))
+    var now = new Date();
+    if(lastRunDate.setHours(0,0,0,0) === now.setHours(0,0,0,0)) {
         process.exit(0)
     }
 }
@@ -99,13 +98,13 @@ const exitIfAlreadyRanToday = () => {
     exitIfAlreadyRanToday()
     const browser = await puppeteer.launch({
         // headless: false,
+        // devtools: true,
+        // slowMo: 50,
         timeout: 60 * 1000,
         defaultViewport: {
             width: 2048,
             height: 1280
         }
-        // devtools: true,
-        // slowMo: 50
     });
 
     const getPromise = async (make) => {
